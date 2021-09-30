@@ -5,9 +5,42 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+
+    <style>
+
+      #steppp {
+        position: relative;
+      }
+
+      section {
+        min-height: 500px;
+        min-width: 200px;
+        background: blue;
+
+        position: absolute;
+        display: none;
+      }
+
+      [data-steppp-active] {
+        display: block;
+      }
+
+    </style>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <div id="steppp">
+      <section data-steppp-active>1</section>
+      <section style="height: 200px;">2</section>
+      <section>3</section>
+      <section>4</section>
+      <section>5</section>
+      <section>6</section>
+      <section>7</section>
+    </div>
+
+    <button id="previous">Previous!</button>
+    <button id="next">Next!</button>
+
+    <script type="module" src="/src/index.ts"></script>
   </body>
 </html>
