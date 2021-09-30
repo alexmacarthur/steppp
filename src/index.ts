@@ -118,11 +118,11 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   element.style.height = `${currentStepHeight}px`;
   let currentWrapperHeight = currentStepHeight;
 
-  document.getElementById('previous')?.addEventListener('click', (e) => {
+  document.getElementById('previous')?.addEventListener('click', (_e) => {
     previous();
   });
 
-  document.getElementById('next')?.addEventListener('click', (e) => {
+  document.getElementById('next')?.addEventListener('click', (_e) => {
     next();
   });
 
