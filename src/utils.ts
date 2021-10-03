@@ -11,6 +11,7 @@ const defaults: KeyframeAnimationOptions = {
 };
 
 export const buildAnimation = ({ frames, targetElement, options = {} }: BuildAnimationArgs) => {
+  console.log(targetElement);
   return targetElement.animate(frames, { ...defaults, ...options });
 }
 
@@ -21,12 +22,12 @@ export const getHeight = (element: HTMLElement): number => {
 export const fireCustomEvent = ({ oldStep, newStep, element, name }: {
   oldStep: HTMLElement;
   newStep: HTMLElement;
-  element: HTMLElement
-  name: string
+  element: HTMLElement;
+  name: string;
 }): void => {
   const event = new CustomEvent(name, {
     detail: {
-      oldStep, newStep
+      oldStep, newStep, element
     }
   });
 

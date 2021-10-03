@@ -28,15 +28,15 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   }
 
   const getStepByName = (stepName: string = "") => {
-    return steps.find(step => step.dataset.step === stepName);
+    return steps.find(step => step.dataset.stepppName === stepName);
   }
 
   const getActiveStepIndex = (): number => {
     return steps.findIndex(step => step.dataset.stepppActive !== undefined) || 0;
   }
 
-  const next = () => {
-    moveStep();
+  const next = (e: Event) => {
+    moveStep({stepName: (e!.target as HTMLElement)?.dataset?.stepppGoTo || ''});
   }
 
   const previous = () => {
@@ -44,7 +44,6 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   }
 
   const animate = (args: any) => {
-    // args.options = MultiStepController.animationOptions;
     args.options = {};
     return buildAnimation(args);
   }
@@ -93,6 +92,11 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
       };
 
       if(!newActiveStep) {
+        fireCustomEvent({
+          ...eventArgs,
+          name: "steppp:abort"
+        });
+
         return;
       }
 
@@ -130,7 +134,7 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   });
 
   document.getElementById('next')?.addEventListener('click', (_e) => {
-    next();
+    next(_e);
   });
 
   const calculateWrapperHeight = (step: HTMLElement): number => {
@@ -155,3 +159,5 @@ if (element) {
     }
   });
 }
+
+export default Steppp;
