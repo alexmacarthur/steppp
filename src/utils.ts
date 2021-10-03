@@ -18,16 +18,25 @@ export const getHeight = (element: HTMLElement): number => {
   return element.getBoundingClientRect().height;
 }
 
-export const fireCustomEvent = ({ step, element, name }: {
-  step: HTMLElement;
+export const fireCustomEvent = ({ oldStep, newStep, element, name }: {
+  oldStep: HTMLElement;
+  newStep: HTMLElement;
   element: HTMLElement
   name: string
 }): void => {
   const event = new CustomEvent(name, {
     detail: {
-      step
+      oldStep, newStep
     }
   });
 
   element.dispatchEvent(event);
+}
+
+export const afterRepaint = (cb: () => any): void => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      cb();
+    });
+  });
 }

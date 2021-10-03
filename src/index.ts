@@ -1,4 +1,4 @@
-import { buildAnimation, getHeight, fireCustomEvent } from './utils'
+import { buildAnimation, getHeight, fireCustomEvent, afterRepaint } from './utils'
 
 type Direction = `forward` | `backward`;
 interface Options {
@@ -78,23 +78,30 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
       return;
     }
 
-    const fallbackIncrementor = direction === 'forward' ? 1 : -1;
-    const oldActiveStep = getStep();
-    const newActiveStep = getStepByName(stepName) || getStep(getActiveStepIndex() + fallbackIncrementor);
-
-    // An animation was already active. Reverse it.
-    if (currentAnimations.length || !newActiveStep) {
-      return;
+    if (currentAnimations.length) {
+      currentAnimations.map(a => a.finish());
     }
 
-    fireCustomEvent({
-      step: oldActiveStep,
-      element,
-      name: "steppp:start"
-    });
+    afterRepaint(() => {
+      const fallbackIncrementor = direction === 'forward' ? 1 : -1;
+      const oldActiveStep = getStep();
+      const newActiveStep = getStepByName(stepName) || getStep(getActiveStepIndex() + fallbackIncrementor);
+      const eventArgs = {
+        oldStep: oldActiveStep,
+        newStep: newActiveStep,
+        element
+      };
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(async () => {
+      if(!newActiveStep) {
+        return;
+      }
+
+      fireCustomEvent({
+        ...eventArgs,
+        name: "steppp:start"
+      });
+
+      afterRepaint(async () => {
         currentAnimations = queueAnimations(oldActiveStep, newActiveStep);
 
         await Promise.all(currentAnimations.map(a => a.finished));
@@ -106,14 +113,14 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
         newActiveStep.dataset.stepppActive = "";
 
         fireCustomEvent({
-          step: oldActiveStep,
-          element,
+          ...eventArgs,
           name: "steppp:complete"
         });
       });
     });
   }
 
+  getStep().style.position = 'absolute';
   let currentStepHeight = getHeight(getStep());
   element.style.height = `${currentStepHeight}px`;
   let currentWrapperHeight = currentStepHeight;
