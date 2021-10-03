@@ -1,28 +1,16 @@
 import { buildAnimation, getHeight, fireCustomEvent, afterRepaint } from './utils'
 
 type Direction = `forward` | `backward`;
-interface Options {
+type Options = {
   stepIsValid: (step: HTMLElement) => Promise<boolean>;
 }
+type StepMovementArgs = { stepName?: string, direction?: Direction }
 
 const defaultOptions: Options = {
   stepIsValid: async (_step) => true
 }
 
 function Steppp(element: HTMLElement, options: Options = defaultOptions) {
-  let mergedOptions: Options = {...defaultOptions, ...options};
-  let { stepIsValid } = mergedOptions;
-  let steps = Array.from(element.children) as HTMLElement[];
-  let currentAnimations: Animation[] = [];
-  let animationFrames = [
-    {
-      opacity: 0
-    },
-    {
-      opacity: 1
-    }
-  ];
-
   const getStep = (stepIndex: number = getActiveStepIndex()): HTMLElement => {
     return steps[stepIndex];
   }
@@ -35,8 +23,13 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     return steps.findIndex(step => step.dataset.stepppActive !== undefined) || 0;
   }
 
-  const next = (e: Event) => {
-    moveStep({stepName: (e!.target as HTMLElement)?.dataset?.stepppGoTo || ''});
+  const moveTo = (stepName: string) => {
+    moveStep( {stepName });
+  }
+
+  const next = () => {
+    // moveStep({stepName: (e!.target as HTMLElement)?.dataset?.stepppGoTo || ''});
+    moveStep();
   }
 
   const previous = () => {
@@ -72,16 +65,12 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     ]
   }
 
-  const moveStep = async ({ stepName = "", direction = 'forward' }: { stepName?: string, direction?: Direction } = {}): Promise<void> => {
-    if (direction === 'forward' && !(await stepIsValid(getStep()))) {
-      return;
-    }
-
+  const moveStep = async ({ stepName = "", direction = 'forward' }: StepMovementArgs = {}): Promise<void> => {
     if (currentAnimations.length) {
       currentAnimations.map(a => a.finish());
     }
 
-    afterRepaint(() => {
+    afterRepaint(async () => {
       const fallbackIncrementor = direction === 'forward' ? 1 : -1;
       const oldActiveStep = getStep();
       const newActiveStep = getStepByName(stepName) || getStep(getActiveStepIndex() + fallbackIncrementor);
@@ -91,13 +80,18 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
         element
       };
 
+      if (direction === 'forward' && !(await stepIsValid(getStep()))) {
+        return fireCustomEvent({
+          ...eventArgs,
+          name: "steppp:invalid"
+        });
+      }
+
       if(!newActiveStep) {
-        fireCustomEvent({
+        return fireCustomEvent({
           ...eventArgs,
           name: "steppp:abort"
         });
-
-        return;
       }
 
       fireCustomEvent({
@@ -124,19 +118,6 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     });
   }
 
-  getStep().style.position = 'absolute';
-  let currentStepHeight = getHeight(getStep());
-  element.style.height = `${currentStepHeight}px`;
-  let currentWrapperHeight = currentStepHeight;
-
-  document.getElementById('previous')?.addEventListener('click', (_e) => {
-    previous();
-  });
-
-  document.getElementById('next')?.addEventListener('click', (_e) => {
-    next(_e);
-  });
-
   const calculateWrapperHeight = (step: HTMLElement): number => {
     element.style.height = "";
     step.style.display = "block";
@@ -146,6 +127,31 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
 
     return newHeight;
   }
+
+  let stepWrapper = (element.querySelector('[data-stepppp-wrapper]') || element) as HTMLElement;
+  let mergedOptions: Options = { ...defaultOptions, ...options };
+  let { stepIsValid } = mergedOptions;
+  let steps = Array.from(stepWrapper.children) as HTMLElement[];
+  let currentAnimations: Animation[] = [];
+  let animationFrames = [
+    {
+      opacity: 0
+    },
+    {
+      opacity: 1
+    }
+  ];
+
+  getStep().style.position = 'absolute';
+  let currentStepHeight = getHeight(getStep());
+  stepWrapper.style.height = `${currentStepHeight}px`;
+  let currentWrapperHeight = currentStepHeight;
+
+  return {
+    next,
+    previous,
+    moveTo
+  }
 }
 
 Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
@@ -153,11 +159,16 @@ Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
 const element = document.getElementById('steppp');
 
 if (element) {
-  Steppp(element, {
-    stepIsValid: async (_step) => {
-      return true;
-    }
+  const { next, previous } = Steppp(element);
+
+  document.getElementById('previous')?.addEventListener('click', (_e) => {
+    previous();
   });
+
+  document.getElementById('next')?.addEventListener('click', (_e) => {
+    next();
+  });
+
 }
 
 export default Steppp;

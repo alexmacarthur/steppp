@@ -37,9 +37,21 @@ const getBody = () => {
   return document.body;
 }
 
+const initialize = () => {
+  const { next, previous } = Steppp(getEl());
+
+  getByText(getBody(), "Previous").addEventListener('click', () => {
+    previous();
+  });
+
+  getByText(getBody(), "Next").addEventListener('click', () => {
+    next();
+  });
+}
+
 describe("basic step movement", () => {
   it("moves forward.", (done) => {
-    Steppp(getEl());
+    initialize();
 
     getByText(getBody(), "Next").click();
 
@@ -53,7 +65,7 @@ describe("basic step movement", () => {
     getByText(getEl(), "1").removeAttribute('data-steppp-active');
     getByText(getEl(), "4").setAttribute('data-steppp-active', '');
 
-    Steppp(getEl());
+    initialize();
 
     getByText(getBody(), "Previous").click();
 
@@ -64,10 +76,13 @@ describe("basic step movement", () => {
   });
 
   it("moves to named step.", (done) => {
-    getByText(getBody(), "Next").setAttribute('data-steppp-go-to', 'slide_number_three');
     getByText(getEl(), "3").setAttribute('data-steppp-name', 'slide_number_three');
 
-    Steppp(getEl());
+    const { moveTo } = Steppp(getEl());
+
+    getByText(getBody(), "Next").addEventListener('click', () => {
+      moveTo('slide_number_three');
+    });
 
     getByText(getBody(), "Next").click();
 
@@ -81,7 +96,7 @@ describe("basic step movement", () => {
     getByText(getEl(), "1").removeAttribute('data-steppp-active');
     getByText(getEl(), "5").setAttribute('data-steppp-active', '');
 
-    Steppp(getEl());
+    initialize();
 
     getByText(getBody(), "Next").click();
 
@@ -92,7 +107,7 @@ describe("basic step movement", () => {
   });
 
   it("does not move backward when no steps are available", (done) => {
-    Steppp(getEl());
+    initialize();
 
     getByText(getBody(), "Previous").click();
 
@@ -105,7 +120,7 @@ describe("basic step movement", () => {
 
 describe("custom events", () => {
   it("fires event when step is starting to transition", (done) => {
-    Steppp(getEl());
+    initialize();
 
     getByText(getBody(), "Next").click();
 
@@ -120,7 +135,7 @@ describe("custom events", () => {
   });
 
   it("fires event when step is done transitioning", (done) => {
-    Steppp(getEl());
+    initialize();
 
     getByText(getBody(), "Next").click();
 
@@ -133,4 +148,8 @@ describe("custom events", () => {
       done();
     });
   });
+});
+
+describe("attribute-driven movement", () => {
+
 });
