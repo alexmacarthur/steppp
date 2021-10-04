@@ -9,19 +9,17 @@
 
 ## Setting Up Steps
 
-Define steps in your HTML in two ways -- either by making them immediate children of your target element:
+Define steps in your HTML and set an `data-steppp-active` attribute on the initial active step. Steps can be configured in two ways -- either as direct children of a target element:
 
 ```html
 <div id="steppp">
-  <div data-stepppp-wrapper>
-    <section data-steppp-active>first</section>
-    <section>second</section>
-    <section>third</section>
-  </div>
+  <section data-steppp-active>first</section>
+  <section>second</section>
+  <section>third</section>
 </div>
 ```
 
-... or, by wrapping them in an element with a `data-stepppp-wrapper` attribute:
+...or within an element with a `data-steppp-wrapper` attached.
 
 ```html
 <div id="steppp">
@@ -35,22 +33,65 @@ Define steps in your HTML in two ways -- either by making them immediate childre
 
 ## Usage
 
-Create a new instance by calling `Steppp` and passing a target element. Functions will be returned for moving forward, backward, or directly to a specific step.
+Steppp comes with two API approaches -- an imperative (you dictate when it'll advance in your code) and declarative (behavior is described by setting various `data-steppp-*` attributes).
+
+### Imperative API
+
+Create a new instance by calling `Steppp` and passing a target element. Functions will be returned for moving forward, backward, or directly to a specific step (see more on this below).
 
 ```js
 const element = document.getElementById('targetElement');
-const { next, previous, moveTo } = Steppp(element);
+const { forward, backward, moveTo } = Steppp(element);
 
-document.querySelector('#next').addEventListener('click', () => {
-  next();
+document.querySelector('#forward').addEventListener('click', () => {
+  forward();
 });
 
-document.querySelector('#previous').addEventListener('click', () => {
-  previous();
+document.querySelector('#backward').addEventListener('click', () => {
+  backward();
+});
+
+document.querySelector('#moveToStepA').addEventListener('click', () => {
+  moveTo('step_a');
 });
 ```
 
-<!--
-### Advancing Through Steps Out-of-Order
+### Declarative API
 
-Sometimes, you may want to skip over certain steps and progress to one out of order. To do this, place a `data-steppp-go-to="YOUR_STEP_NAME"` attribute on the element that triggers the movement. -->
+The declarative approach requires you to create a new instance of Steppp like before, and then place specific `data-steppp-*` attributes in your markup. The elements on which these attributes are placed _must_ exist as children to the target element. As such, wrapping your steps within `data-steppp-wrapper` is required using this approach.
+
+```js
+const element = document.getElementById('targetElement');
+Steppp(element);
+```
+
+#### Moving Forward & Backward
+
+Attach `data-steppp-forward` and `data-steppp-backward` attributes to elements in order to move those respective directions.
+
+```html
+<div id="steppp">
+  <div data-stepppp-wrapper>
+    <section data-steppp-active>first</section>
+    <!-- ...other steps -->
+  </div>
+
+  <button data-steppp-forward>Forward</button>
+  <button data-steppp-backward>Backward</button>
+</div>
+```
+
+#### 
+
+```html
+<div id="steppp">
+  <div data-stepppp-wrapper>
+    <section data-steppp-active>
+      some step
+      <button data-steppp-to="third_step">Go to Step</button>
+    </section>
+    <!-- ...other steps -->
+    <section data-steppp-name="third_step">another step</section>
+  </div>
+  <button data-steppp-backward="">Backward</button>
+</div>

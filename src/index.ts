@@ -24,15 +24,14 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   }
 
   const moveTo = (stepName: string) => {
-    moveStep( {stepName });
+    moveStep({ stepName });
   }
 
-  const next = () => {
-    // moveStep({stepName: (e!.target as HTMLElement)?.dataset?.stepppGoTo || ''});
+  const forward = () => {
     moveStep();
   }
 
-  const previous = () => {
+  const backward = () => {
     moveStep({ direction: 'backward' });
   }
 
@@ -128,12 +127,11 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     return newHeight;
   }
 
-  let stepWrapper = (element.querySelector('[data-stepppp-wrapper]') || element) as HTMLElement;
-  let mergedOptions: Options = { ...defaultOptions, ...options };
-  let { stepIsValid } = mergedOptions;
-  let steps = Array.from(stepWrapper.children) as HTMLElement[];
-  let currentAnimations: Animation[] = [];
-  let animationFrames = [
+  const stepWrapper = (element.querySelector('[data-steppp-wrapper]') || element) as HTMLElement;
+  const mergedOptions: Options = { ...defaultOptions, ...options };
+  const { stepIsValid } = mergedOptions;
+  const steps = Array.from(stepWrapper.children) as HTMLElement[];
+  const animationFrames = [
     {
       opacity: 0
     },
@@ -141,15 +139,30 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
       opacity: 1
     }
   ];
+  let currentAnimations: Animation[] = [];
 
   getStep().style.position = 'absolute';
-  let currentStepHeight = getHeight(getStep());
+  const currentStepHeight = getHeight(getStep());
   stepWrapper.style.height = `${currentStepHeight}px`;
   let currentWrapperHeight = currentStepHeight;
 
+  element.querySelectorAll('[data-steppp-backward]').forEach(el => {
+    el.addEventListener('click', backward);
+  });
+
+  element.querySelectorAll('[data-steppp-forward]').forEach(el => {
+    el.addEventListener('click', forward);
+  });
+
+  element.querySelectorAll('[data-steppp-to]').forEach(el => {
+    el.addEventListener('click', () => {
+      moveTo((el as HTMLElement).dataset.stepppTo || "")
+    });
+  });
+
   return {
-    next,
-    previous,
+    backward,
+    forward,
     moveTo
   }
 }
@@ -159,16 +172,15 @@ Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
 const element = document.getElementById('steppp');
 
 if (element) {
-  const { next, previous } = Steppp(element);
+  const { backward, forward } = Steppp(element);
 
-  document.getElementById('previous')?.addEventListener('click', (_e) => {
-    previous();
-  });
+  // document.getElementById('forward')?.addEventListener('click', (_e) => {
+  //   forward();
+  // });
 
-  document.getElementById('next')?.addEventListener('click', (_e) => {
-    next();
-  });
-
+  // document.getElementById('backward')?.addEventListener('click', (_e) => {
+  //   backward();
+  // });
 }
 
 export default Steppp;
