@@ -133,10 +133,12 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   const steps = Array.from(stepWrapper.children) as HTMLElement[];
   const animationFrames = [
     {
-      opacity: 0
+      // opacity: 0
+      transform: 'translateX(-100%)'
     },
     {
-      opacity: 1
+      // opacity: 1
+      transform: 'translateX(0)'
     }
   ];
   let currentAnimations: Animation[] = [];

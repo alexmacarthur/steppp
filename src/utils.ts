@@ -11,7 +11,6 @@ const defaults: KeyframeAnimationOptions = {
 };
 
 export const buildAnimation = ({ frames, targetElement, options = {} }: BuildAnimationArgs) => {
-  console.log(targetElement);
   return targetElement.animate(frames, { ...defaults, ...options });
 }
 

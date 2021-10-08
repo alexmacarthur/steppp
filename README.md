@@ -1,12 +1,6 @@
 ## To Do:
 * custom animation options
 * allow different types of animations
-* write tests
-* figure out triggers
-  * attribute-driven
-  * imperative
-* make core constructor return imperative methods
-
 ## Setting Up Steps
 
 Define steps in your HTML and set an `data-steppp-active` attribute on the initial active step. Steps can be configured in two ways -- either as direct children of a target element:
