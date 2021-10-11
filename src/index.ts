@@ -1,10 +1,5 @@
+import { Options, StepMovementArgs, CommittableAnimation} from './types';
 import { buildAnimation, getHeight, fireCustomEvent, afterRepaint } from './utils'
-
-type Direction = `forward` | `backward`;
-type Options = {
-  stepIsValid: (step: HTMLElement) => Promise<boolean>;
-}
-type StepMovementArgs = { stepName?: string, direction?: Direction }
 
 const defaultOptions: Options = {
   stepIsValid: async (_step) => true
@@ -103,6 +98,11 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
 
         await Promise.all(currentAnimations.map(a => a.finished));
 
+        currentAnimations.forEach((a: CommittableAnimation) => {
+          a.commitStyles();
+          a.persist();
+        });
+
         currentAnimations = [];
 
         oldActiveStep.style.display = "none";
@@ -141,7 +141,7 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
       transform: 'translateX(0)'
     }
   ];
-  let currentAnimations: Animation[] = [];
+  let currentAnimations: CommittableAnimation[] = [];
 
   getStep().style.position = 'absolute';
   const currentStepHeight = getHeight(getStep());
@@ -174,7 +174,7 @@ Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
 const element = document.getElementById('steppp');
 
 if (element) {
-  const { backward, forward } = Steppp(element);
+  Steppp(element);
 
   // document.getElementById('forward')?.addEventListener('click', (_e) => {
   //   forward();
