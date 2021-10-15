@@ -1,9 +1,6 @@
 import { Options, StepMovementArgs, CommittableAnimation} from './types';
 import { buildAnimation, getHeight, fireCustomEvent, afterRepaint } from './utils'
-
-const defaultOptions: Options = {
-  stepIsValid: async (_step) => true
-}
+import defaultOptions from './defaultOptions';
 
 function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   const getStep = (stepIndex: number = getActiveStepIndex()): HTMLElement => {
@@ -38,10 +35,12 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   const queueAnimations = (oldStep: HTMLElement, newStep: HTMLElement) => {
     return [
       animate({
+        // frames: exitAnimationFrames
         frames: [...animationFrames.slice()].reverse(),
         targetElement: oldStep
       }),
       animate({
+        // frames: enterAnimationFrames
         frames: animationFrames,
         targetElement: newStep
       }),
@@ -127,20 +126,12 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     return newHeight;
   }
 
+  options = {...defaultOptions, ...options};
   const stepWrapper = (element.querySelector('[data-steppp-wrapper]') || element) as HTMLElement;
   const mergedOptions: Options = { ...defaultOptions, ...options };
   const { stepIsValid } = mergedOptions;
   const steps = Array.from(stepWrapper.children) as HTMLElement[];
-  const animationFrames = [
-    {
-      // opacity: 0
-      transform: 'translateX(-100%)'
-    },
-    {
-      // opacity: 1
-      transform: 'translateX(0)'
-    }
-  ];
+  const animationFrames = options.frames;
   let currentAnimations: CommittableAnimation[] = [];
 
   getStep().style.position = 'absolute';
@@ -174,7 +165,18 @@ Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
 const element = document.getElementById('steppp');
 
 if (element) {
-  Steppp(element);
+  Steppp(element, {
+    frames: [
+      {
+        opacity: 0
+      },
+      {
+        opacity: 1
+      }
+    ]
+  });
+
+  // animation frames can either be array or object.
 
   // document.getElementById('forward')?.addEventListener('click', (_e) => {
   //   forward();

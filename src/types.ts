@@ -5,7 +5,8 @@ export type BuildAnimationArgs = {
 }
 export type Direction = `forward` | `backward`;
 export type Options = {
-    stepIsValid: (step: HTMLElement) => Promise<boolean>;
+    stepIsValid?: (step: HTMLElement) => Promise<boolean>;
+    frames: any
 }
 export type StepMovementArgs = { stepName?: string, direction?: Direction }
 export type CommittableAnimation = Animation & {
