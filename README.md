@@ -19,7 +19,7 @@ Define steps in your HTML in two ways -- either by making them immediate childre
     <section>third</section>
   </div>
 </div>
-```
+```dsd
 
 ... or, by wrapping them in an element with a `data-stepppp-wrapper` attribute:
 
