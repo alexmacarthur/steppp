@@ -29,7 +29,7 @@ Define steps in your HTML in two ways -- either by making them immediate childre
     <section data-steppp-active>first</section>
     <section>second</section>
     <section>third</section>
-  </div>
+  </div>a
 </div>
 ```
 
