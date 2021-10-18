@@ -33,16 +33,19 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   }
 
   const queueAnimations = (oldStep: HTMLElement, newStep: HTMLElement) => {
+    const f = {
+      enter: animationFrames,
+      exit: [...animationFrames.slice()].reverse()
+    }
+
     return [
       animate({
-        // frames: exitAnimationFrames
-        frames: [...animationFrames.slice()].reverse(),
-        targetElement: oldStep
+        frames: f.enter,
+        targetElement: newStep
       }),
       animate({
-        // frames: enterAnimationFrames
-        frames: animationFrames,
-        targetElement: newStep
+        frames: f.exit,
+        targetElement: oldStep
       }),
       animate({
         frames: [
@@ -126,6 +129,17 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     return newHeight;
   }
 
+  const computeAnimationFrames = (frames) => {
+    if(Array.isArray(frames)) {
+      return {
+        enter: frames,
+        exit: [...frames.slice()].reverse()
+      }
+    }
+
+    return frames;
+  }
+
   options = {...defaultOptions, ...options};
   const stepWrapper = (element.querySelector('[data-steppp-wrapper]') || element) as HTMLElement;
   const mergedOptions: Options = { ...defaultOptions, ...options };
@@ -168,10 +182,10 @@ if (element) {
   Steppp(element, {
     frames: [
       {
-        opacity: 0
+        transform: 'translateX(-100%)'
       },
       {
-        opacity: 1
+        transform: 'translateX(0)'
       }
     ]
   });
