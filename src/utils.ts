@@ -1,4 +1,4 @@
-import { BuildAnimationArgs, CommittableAnimation } from "./types";
+import { BuildAnimationArgs, CommittableAnimation, Direction } from "./types";
 
 const defaults: KeyframeAnimationOptions = {
   easing: "ease",
@@ -35,4 +35,12 @@ export const afterRepaint = (cb: () => any): void => {
       cb();
     });
   });
+}
+
+export const isMovingBackward = (direction: Direction): boolean => {
+  return direction === 'backward';
+}
+
+export const flip = (items: any[]): any[] => {
+  return [...items].reverse();
 }

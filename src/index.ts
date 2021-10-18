@@ -1,5 +1,5 @@
-import { Options, StepMovementArgs, CommittableAnimation} from './types';
-import { buildAnimation, getHeight, fireCustomEvent, afterRepaint } from './utils'
+import { Options, StepMovementArgs, CommittableAnimation, Frame, FrameDef, Direction} from './types';
+import { buildAnimation, getHeight, fireCustomEvent, afterRepaint, isMovingBackward, flip } from './utils'
 import defaultOptions from './defaultOptions';
 
 function Steppp(element: HTMLElement, options: Options = defaultOptions) {
@@ -32,20 +32,18 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     return buildAnimation(args);
   }
 
-  const queueAnimations = (oldStep: HTMLElement, newStep: HTMLElement) => {
-    const f = {
-      enter: animationFrames,
-      exit: [...animationFrames.slice()].reverse()
-    }
-
+  const queueAnimations = (oldStep: HTMLElement, newStep: HTMLElement, direction: Direction) => {
+    const backward = isMovingBackward(direction);
+    const { enter, exit } = animationFrames;
+    
     return [
       animate({
-        frames: f.enter,
-        targetElement: newStep
+        frames: backward ? flip(exit) : exit,
+        targetElement: backward ? newStep : oldStep
       }),
       animate({
-        frames: f.exit,
-        targetElement: oldStep
+        frames: backward ? flip(enter) : enter,
+        targetElement: backward ? oldStep : newStep
       }),
       animate({
         frames: [
@@ -96,7 +94,7 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
       });
 
       afterRepaint(async () => {
-        currentAnimations = queueAnimations(oldActiveStep, newActiveStep);
+        currentAnimations = queueAnimations(oldActiveStep, newActiveStep, direction);
 
         await Promise.all(currentAnimations.map(a => a.finished));
 
@@ -129,7 +127,7 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
     return newHeight;
   }
 
-  const computeAnimationFrames = (frames) => {
+  const computeAnimationFrames = (frames: Frame[] | FrameDef): FrameDef => {
     if(Array.isArray(frames)) {
       return {
         enter: frames,
@@ -145,7 +143,7 @@ function Steppp(element: HTMLElement, options: Options = defaultOptions) {
   const mergedOptions: Options = { ...defaultOptions, ...options };
   const { stepIsValid } = mergedOptions;
   const steps = Array.from(stepWrapper.children) as HTMLElement[];
-  const animationFrames = options.frames;
+  const animationFrames: FrameDef = computeAnimationFrames(options.frames);
   let currentAnimations: CommittableAnimation[] = [];
 
   getStep().style.position = 'absolute';
@@ -180,14 +178,32 @@ const element = document.getElementById('steppp');
 
 if (element) {
   Steppp(element, {
-    frames: [
-      {
-        transform: 'translateX(-100%)'
-      },
-      {
-        transform: 'translateX(0)'
-      }
-    ]
+    frames: {
+      enter: [
+        {
+          transform: 'translateX(-100%)'
+        },
+        {
+          transform: 'translateX(0)'
+        }
+      ],
+      exit: [
+        {
+          transform: 'translateX(0)'
+        },
+        {
+          transform: 'translateX(100%)'
+        }
+      ]
+    }
+    // frames: [
+    //   {
+    //     transform: 'translateX(-100%)'
+    //   },
+    //   {
+    //     transform: 'translateX(0)'
+    //   }
+    // ]
   });
 
   // animation frames can either be array or object.

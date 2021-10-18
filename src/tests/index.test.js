@@ -73,3 +73,33 @@ it("Custom animations are used.", (done) => {
     });
 });
  
+// it("Handles custom enter/exit animations.", () => {
+//     const buildAnimationSpy = jest.spyOn(utils, 'buildAnimation').mockImplementation(() => {
+//         return {
+//             finished: Promise.resolve(true),
+//             commitStyles() {},
+//             persist() {}
+//         }
+//     });
+
+//     const { forward } = Steppp(getEl(), {
+//         frames: [
+//             {
+//                 opacity: 0
+//             },
+//             {
+//                 opacity: 1
+//             }
+//         ]
+//     });
+
+//     forward();
+
+//     getEl().addEventListener('steppp:complete', () => {
+//         const frames = buildAnimationSpy.mock.calls[0][0].frames;
+//         expect(frames).toEqual(
+//             expect.arrayContaining([ { opacity: 0 }, {  opacity: 1 } ])
+//         )
+//         done();
+//     });
+// });
