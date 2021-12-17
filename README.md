@@ -90,6 +90,30 @@ You can also specify step names to jump directly from one step to another regard
 </div>
 ```
 
+### Custom Events
+
+Steppp provides several custom events that you can listen for and hook into.
+
+```js
+const element = document.getElementById('targetElement');
+Steppp(element);
+element.addEventListener('steppp:complete', (event) => {
+  const { oldStep, newStep, element } = event.detail;
+  // do something cool now that the step transition is complete
+});
+```
+
+#### Available Events
+
+These are the events you can hook into:
+
+| Event Name      | Description |
+| --------------- | ----------- |
+| steppp:invalid  | This event fires when a step transition fails to start because the current step is invalid. |
+| steppp:abort    | This event fires when a step transition fails to start because the next step cannot be determined. |
+| steppp:start    | This event fires when a step transition starts. |
+| steppp:complete | This event fires when a step transition completes. |
+
 ## Development
 
 ### To Do:
