@@ -35,7 +35,9 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
   const queueAnimations = (oldStep: HTMLElement, newStep: HTMLElement, direction: Direction) => {
     const backward = isMovingBackward(direction);
     const { enter, exit } = animationFrames;
-    
+    const oldStepHeight = `${currentWrapperHeight}px`
+    const newStepHeight = `${calculateWrapperHeight(newStep)}px`
+
     return [
       animate({
         frames: backward ? flip(exit) : exit,
@@ -48,13 +50,24 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
       animate({
         frames: [
           {
-            height: `${currentWrapperHeight}px`,
+            height: oldStepHeight,
           },
           {
-            height: `${calculateWrapperHeight(newStep)}px`
+            height: newStepHeight
           }
         ],
         targetElement: element
+      }),
+      animate({
+        frames: [
+          {
+            height: oldStepHeight,
+          },
+          {
+            height: newStepHeight
+          }
+        ],
+        targetElement: stepWrapper
       })
     ]
   }
