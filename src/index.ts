@@ -2,7 +2,7 @@ import { Options, StepMovementArgs, CommittableAnimation, Frame, FrameDef, Direc
 import { buildAnimation, getHeight, fireCustomEvent, afterRepaint, isMovingBackward, flip } from './utils'
 import defaultOptions from './defaultOptions';
 
-function Steppp(element: HTMLElement, options: Options = defaultOptions) {
+function Steppp(element: HTMLElement, options: any = defaultOptions) {
   const getStep = (stepIndex: number = getActiveStepIndex()): HTMLElement => {
     return steps[stepIndex];
   }
