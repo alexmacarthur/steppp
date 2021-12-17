@@ -1,7 +1,8 @@
-## To Do:
-* custom animation options
-* allow different types of animations
-## Setting Up Steps
+# Steppp
+
+## Usage
+
+### Setting Up Steps
 
 Define steps in your HTML and set an `data-steppp-active` attribute on the initial active step. Steps can be configured in two ways -- either as direct children of a target element:
 
@@ -25,11 +26,11 @@ Define steps in your HTML and set an `data-steppp-active` attribute on the initi
 </div>
 ```
 
-## Usage
+### Moving From Step to Step
 
 Steppp comes with two API approaches -- an imperative (you dictate when it'll advance in your code) and declarative (behavior is described by setting various `data-steppp-*` attributes).
 
-### Imperative API
+#### Imperative API
 
 Create a new instance by calling `Steppp` and passing a target element. Functions will be returned for moving forward, backward, or directly to a specific step (see more on this below).
 
@@ -50,7 +51,7 @@ document.querySelector('#moveToStepA').addEventListener('click', () => {
 });
 ```
 
-### Declarative API
+#### Declarative API
 
 The declarative approach requires you to create a new instance of Steppp like before, and then place specific `data-steppp-*` attributes in your markup. The elements on which these attributes are placed _must_ exist as children to the target element. As such, wrapping your steps within `data-steppp-wrapper` is required using this approach.
 
@@ -59,9 +60,7 @@ const element = document.getElementById('targetElement');
 Steppp(element);
 ```
 
-#### Moving Forward & Backward
-
-Attach `data-steppp-forward` and `data-steppp-backward` attributes to elements in order to move those respective directions.
+Attach `data-steppp-forward` and `data-steppp-backward` attributes to elements in order to move those respective directions:
 
 ```html
 <div id="steppp">
@@ -75,7 +74,7 @@ Attach `data-steppp-forward` and `data-steppp-backward` attributes to elements i
 </div>
 ```
 
-#### 
+You can also specify step names to jump directly from one step to another regardless of their "natural" order:
 
 ```html
 <div id="steppp">
@@ -87,5 +86,13 @@ Attach `data-steppp-forward` and `data-steppp-backward` attributes to elements i
     <!-- ...other steps -->
     <section data-steppp-name="third_step">another step</section>
   </div>
-  <button data-steppp-backward="">Backward</button>
+  <button data-steppp-backward>Backward</button>
 </div>
+```
+
+## Development
+
+### To Do:
+
+* custom animation options
+* allow different types of animations
