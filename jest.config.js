@@ -1,4 +1,5 @@
 module.exports = {
   testEnvironment: "jsdom",
-  restoreMocks: true
+  restoreMocks: true, 
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"]
 }

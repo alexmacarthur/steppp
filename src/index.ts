@@ -1,51 +1,71 @@
-import { Options, StepMovementArgs, CommittableAnimation, Frame, FrameDef, Direction} from './types';
-import { buildAnimation, getHeight, fireCustomEvent, afterRepaint, isMovingBackward, flip } from './utils'
-import defaultOptions from './defaultOptions';
+import {
+  Options,
+  StepMovementArgs,
+  CommittableAnimation,
+  Frame,
+  FrameDef,
+  Direction,
+} from "./types";
+import {
+  buildAnimation,
+  getHeight,
+  fireCustomEvent,
+  afterRepaint,
+  isMovingBackward,
+  flip,
+} from "./utils";
+import defaultOptions from "./defaultOptions";
 
 function Steppp(element: HTMLElement, options: any = defaultOptions) {
   const getStep = (stepIndex: number = getActiveStepIndex()): HTMLElement => {
     return steps[stepIndex];
-  }
+  };
 
   const getStepByName = (stepName: string = "") => {
-    return steps.find(step => step.dataset.stepppName === stepName);
-  }
+    return steps.find((step) => step.dataset.stepppName === stepName);
+  };
 
   const getActiveStepIndex = (): number => {
-    return steps.findIndex(step => step.dataset.stepppActive !== undefined) || 0;
-  }
+    return (
+      steps.findIndex((step) => step.dataset.stepppActive !== undefined) || 0
+    );
+  };
 
   const moveTo = (stepName: string) => {
     moveStep({ stepName });
-  }
+  };
 
   const forward = () => {
     moveStep();
-  }
+  };
 
   const backward = () => {
-    moveStep({ direction: 'backward' });
-  }
+    moveStep({ direction: "backward" });
+  };
 
   const animate = (args: any) => {
     args.options = {};
     return buildAnimation(args);
-  }
+  };
 
-  const queueAnimations = (oldStep: HTMLElement, newStep: HTMLElement, direction: Direction) => {
+  const queueAnimations = (
+    oldStep: HTMLElement,
+    newStep: HTMLElement,
+    direction: Direction
+  ) => {
     const backward = isMovingBackward(direction);
     const { enter, exit } = animationFrames;
-    const oldStepHeight = `${currentWrapperHeight}px`
-    const newStepHeight = `${calculateWrapperHeight(newStep)}px`
+    const oldStepHeight = `${currentWrapperHeight}px`;
+    const newStepHeight = `${calculateWrapperHeight(newStep)}px`;
 
     return [
       animate({
         frames: backward ? flip(exit) : exit,
-        targetElement: backward ? newStep : oldStep
+        targetElement: backward ? newStep : oldStep,
       }),
       animate({
         frames: backward ? flip(enter) : enter,
-        targetElement: backward ? oldStep : newStep
+        targetElement: backward ? oldStep : newStep,
       }),
       animate({
         frames: [
@@ -53,10 +73,10 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
             height: oldStepHeight,
           },
           {
-            height: newStepHeight
-          }
+            height: newStepHeight,
+          },
         ],
-        targetElement: element
+        targetElement: element,
       }),
       animate({
         frames: [
@@ -64,52 +84,61 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
             height: oldStepHeight,
           },
           {
-            height: newStepHeight
-          }
+            height: newStepHeight,
+          },
         ],
-        targetElement: stepWrapper
-      })
-    ]
-  }
+        targetElement: stepWrapper,
+      }),
+    ];
+  };
 
-  const moveStep = async ({ stepName = "", direction = 'forward' }: StepMovementArgs = {}): Promise<void> => {
+  const moveStep = async ({
+    stepName = "",
+    direction = "forward",
+  }: StepMovementArgs = {}): Promise<void> => {
     if (currentAnimations.length) {
-      currentAnimations.map(a => a.finish());
+      currentAnimations.map((a) => a.finish());
     }
 
     afterRepaint(async () => {
-      const fallbackIncrementor = direction === 'forward' ? 1 : -1;
+      const fallbackIncrementor = direction === "forward" ? 1 : -1;
       const oldActiveStep = getStep();
-      const newActiveStep = getStepByName(stepName) || getStep(getActiveStepIndex() + fallbackIncrementor);
+      const newActiveStep =
+        getStepByName(stepName) ||
+        getStep(getActiveStepIndex() + fallbackIncrementor);
       const eventArgs = {
         oldStep: oldActiveStep,
         newStep: newActiveStep,
-        element
+        element,
       };
 
-      if (direction === 'forward' && !(await stepIsValid(getStep()))) {
+      if (direction === "forward" && !(await stepIsValid(getStep()))) {
         return fireCustomEvent({
           ...eventArgs,
-          name: "steppp:invalid"
+          name: "steppp:invalid",
         });
       }
 
-      if(!newActiveStep) {
+      if (!newActiveStep) {
         return fireCustomEvent({
           ...eventArgs,
-          name: "steppp:abort"
+          name: "steppp:abort",
         });
       }
 
       fireCustomEvent({
         ...eventArgs,
-        name: "steppp:start"
+        name: "steppp:start",
       });
 
       afterRepaint(async () => {
-        currentAnimations = queueAnimations(oldActiveStep, newActiveStep, direction);
+        currentAnimations = queueAnimations(
+          oldActiveStep,
+          newActiveStep,
+          direction
+        );
 
-        await Promise.all(currentAnimations.map(a => a.finished));
+        await Promise.all(currentAnimations.map((a) => a.finished));
 
         currentAnimations.forEach((a: CommittableAnimation) => {
           a.commitStyles();
@@ -124,11 +153,11 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
 
         fireCustomEvent({
           ...eventArgs,
-          name: "steppp:complete"
+          name: "steppp:complete",
         });
       });
     });
-  }
+  };
 
   const calculateWrapperHeight = (step: HTMLElement): number => {
     element.style.height = "";
@@ -138,77 +167,78 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
     currentWrapperHeight = newHeight;
 
     return newHeight;
-  }
+  };
 
   const computeAnimationFrames = (frames: Frame[] | FrameDef): FrameDef => {
-    if(Array.isArray(frames)) {
+    if (Array.isArray(frames)) {
       return {
         enter: frames,
-        exit: [...frames.slice()].reverse()
-      }
+        exit: [...frames.slice()].reverse(),
+      };
     }
 
     return frames;
-  }
+  };
 
-  options = {...defaultOptions, ...options};
-  const stepWrapper = (element.querySelector('[data-steppp-wrapper]') || element) as HTMLElement;
+  options = { ...defaultOptions, ...options };
+  const stepWrapper = (element.querySelector("[data-steppp-wrapper]") ||
+    element) as HTMLElement;
   const mergedOptions: Options = { ...defaultOptions, ...options };
   const { stepIsValid } = mergedOptions;
   const steps = Array.from(stepWrapper.children) as HTMLElement[];
   const animationFrames: FrameDef = computeAnimationFrames(options.frames);
   let currentAnimations: CommittableAnimation[] = [];
 
-  getStep().style.position = 'absolute';
+  getStep().style.position = "absolute";
   const currentStepHeight = getHeight(getStep());
   stepWrapper.style.height = `${currentStepHeight}px`;
   let currentWrapperHeight = currentStepHeight;
 
-  element.querySelectorAll('[data-steppp-backward]').forEach(el => {
-    el.addEventListener('click', backward);
+  element.querySelectorAll("[data-steppp-backward]").forEach((el) => {
+    el.addEventListener("click", backward);
   });
 
-  element.querySelectorAll('[data-steppp-forward]').forEach(el => {
-    el.addEventListener('click', forward);
+  element.querySelectorAll("[data-steppp-forward]").forEach((el) => {
+    el.addEventListener("click", forward);
   });
 
-  element.querySelectorAll('[data-steppp-to]').forEach(el => {
-    el.addEventListener('click', () => {
-      moveTo((el as HTMLElement).dataset.stepppTo || "")
+  element.querySelectorAll("[data-steppp-to]").forEach((el) => {
+    el.addEventListener("click", () => {
+      moveTo((el as HTMLElement).dataset.stepppTo || "");
     });
   });
 
   return {
     backward,
     forward,
-    moveTo
-  }
+    moveTo,
+  };
 }
 
 Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
 
-const element = document.getElementById('steppp');
+const element = document.getElementById("steppp");
 
 if (element) {
   Steppp(element, {
     frames: {
       enter: [
         {
-          transform: 'translateX(-100%)'
+          transform: "translateX(-100%)",
         },
         {
-          transform: 'translateX(0)'
-        }
+          transform: "translateX(0)",
+        },
       ],
       exit: [
         {
-          transform: 'translateX(0)'
+          transform: "translateX(0)",
         },
         {
-          transform: 'translateX(100%)'
-        }
-      ]
-    }
+          transform: "translateX(100%)",
+        },
+      ],
+    },
     // frames: [
     //   {
     //     transform: 'translateX(-100%)'

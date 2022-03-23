@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
 import { getByText } from "@testing-library/dom";
 import { getEl, getBody } from "./test-helpers";
-import Steppp from '../index';
-import * as utils from '../utils'
+import Steppp from "../index";
+import * as utils from "../utils";
 
 beforeEach(() => {
   document.body.innerHTML = `
@@ -29,41 +29,35 @@ beforeEach(() => {
     </div>
   `;
 
-  jest.spyOn(utils, 'buildAnimation').mockImplementation(() => {
-    return {
-      finished: Promise.resolve(true)
-    }
-  });
-
   Steppp(getEl());
 });
 
 it("moves forward.", (done) => {
-    getByText(getBody(), "forward").click();
+  getByText(getBody(), "forward").click();
 
-    getEl().addEventListener('steppp:complete', () => {
-        expect(getByText(getBody(), "2")).toHaveAttribute('data-steppp-active', '');
-        done();
-    });
+  getEl().addEventListener("steppp:complete", () => {
+    expect(getByText(getBody(), "2")).toHaveAttribute("data-steppp-active", "");
+    done();
+  });
 });
 
 it("moves backward", (done) => {
-    getByText(getEl(), "1").removeAttribute('data-steppp-active');
-    getByText(getEl(), "4").setAttribute('data-steppp-active', '');
+  getByText(getEl(), "1").removeAttribute("data-steppp-active");
+  getByText(getEl(), "4").setAttribute("data-steppp-active", "");
 
-    getByText(getBody(), "backward").click();
+  getByText(getBody(), "backward").click();
 
-    getEl().addEventListener('steppp:complete', () => {
-      expect(getByText(getEl(), "3")).toHaveAttribute('data-steppp-active', '');
-      done();
-    });
+  getEl().addEventListener("steppp:complete", () => {
+    expect(getByText(getEl(), "3")).toHaveAttribute("data-steppp-active", "");
+    done();
+  });
 });
 
 it("moves to specific named step", (done) => {
-    getByText(getBody(), "move to step #3").click();
+  getByText(getBody(), "move to step #3").click();
 
-    getEl().addEventListener('steppp:complete', () => {
-        expect(getByText(getEl(), "3")).toHaveAttribute('data-steppp-active', '');
-        done();
-    });
+  getEl().addEventListener("steppp:complete", () => {
+    expect(getByText(getEl(), "3")).toHaveAttribute("data-steppp-active", "");
+    done();
+  });
 });
