@@ -26,6 +26,28 @@ Define steps in your HTML and set an `data-steppp-active` attribute on the initi
 </div>
 ```
 
+### Setting Up Styles
+
+There are a few minimal styles that are required in order for Steppp to operate correctly.
+
+```css
+  /* Each `step` in your slider. */
+  section {
+    position: absolute;
+    display: none;
+    left: 0;
+  }
+
+  [data-steppp-active] {
+    display: block;
+  }
+
+  [data-steppp-wrapper] {
+    position: relative;
+    overflow: hidden;
+  }
+```
+
 ### Moving From Step to Step
 
 Steppp comes with two API approaches -- an imperative (you dictate when it'll advance in your code) and declarative (behavior is described by setting various `data-steppp-*` attributes).
