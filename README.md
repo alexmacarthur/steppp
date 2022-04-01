@@ -141,4 +141,4 @@ These are the events you can hook into:
 ### To Do:
 
 * custom animation options
-* allow different types of animations
+* fix dyanmic heights
