@@ -15,8 +15,9 @@
       }
 
       section {
-        min-height: 500px;
-        min-width: 200px;
+        /* min-height: 500px; */
+        /* min-width: 200px; */
+        width: 100%;
         background: blue;
         border-radius: 3px;
 
@@ -33,6 +34,9 @@
       [data-steppp-wrapper] {
         position: relative;
         overflow: hidden;
+
+
+        width: 200px;
       }
     </style>
   </head>
@@ -42,11 +46,20 @@
         <section data-steppp-active>1
           <button data-steppp-to="number_five">go</button>
         </section>
-        <section style="height: 200px;">2</section>
-        <section>3</section>
-        <section>4</section>
-        <section data-steppp-name="number_five">5</section>
-        <section>6</section>
+        <section style="height: 200px;" id="second">
+          2
+
+          <button id="button">expand</button>
+          <script>
+            button.addEventListener('click', () => {
+              second.style.height = "400px";
+            });
+          </script>
+        </section>
+        <section style="height: 600px;">3</section>
+        <section style="height: 100px;">4</section>
+        <section style="height: 500px;" data-steppp-name="number_five">5</section>
+        <section style="height: 700px;">6</section>
         <section>7</section>
       </div>
 

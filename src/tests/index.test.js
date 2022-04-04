@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom";
-import { getByText } from "@testing-library/dom";
 import { getEl, getBody } from "./test-helpers";
 import Steppp from "../index";
 import * as utils from "../utils";
@@ -37,6 +36,7 @@ it("Default animations are used.", (done) => {
 
   getEl().addEventListener("steppp:complete", () => {
     const frames = buildAnimationSpy.mock.calls[0][0].frames;
+
     expect(frames).toEqual(
       expect.arrayContaining([
         { transform: "translateX(0)" },
@@ -78,6 +78,35 @@ it("Custom animations are used.", (done) => {
     );
     done();
   });
+});
+
+it.only("Updates wrapper when active step height changes.", () => {
+  const observeMock = jest.fn();
+  const unobserveMock = jest.fn();
+
+  window.ResizeObserver = function () {
+    return {
+      observe: observeMock, 
+      unobserve: unobserveMock
+    }
+  }
+
+  const buildAnimationSpy = jest
+    .spyOn(utils, "buildAnimation")
+    .mockImplementation(() => {
+      return {
+        finished: Promise.resolve(true),
+        commitStyles() {},
+        persist() {},
+      };
+    });
+
+  Steppp(getEl());
+
+  const activeStep = document.querySelector('[data-steppp-active]');  
+
+  expect(observeMock).toHaveBeenCalledTimes(1);
+  expect(unobserveMock).toHaveBeenCalledTimes(0);
 });
 
 // it("Handles custom enter/exit animations.", () => {

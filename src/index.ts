@@ -76,17 +76,6 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
             height: newStepHeight,
           },
         ],
-        targetElement: element,
-      }),
-      animate({
-        frames: [
-          {
-            height: oldStepHeight,
-          },
-          {
-            height: newStepHeight,
-          },
-        ],
         targetElement: stepWrapper,
       }),
     ];
@@ -151,6 +140,9 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
         delete oldActiveStep.dataset.stepppActive;
         newActiveStep.dataset.stepppActive = "";
 
+        heightObserver.unobserve(oldActiveStep);
+        heightObserver.observe(newActiveStep);
+
         fireCustomEvent({
           ...eventArgs,
           name: "steppp:complete",
@@ -159,10 +151,10 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
     });
   };
 
-  const calculateWrapperHeight = (step: HTMLElement): number => {
+  const calculateWrapperHeight = (step: HTMLElement, height?: number): number => {
     element.style.height = "";
     step.style.display = "block";
-    const newHeight = getHeight(step);
+    const newHeight = height || getHeight(step);
 
     currentWrapperHeight = newHeight;
 
@@ -181,18 +173,33 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
   };
 
   options = { ...defaultOptions, ...options };
+
+  const heightObserver = new ResizeObserver((entries) => {
+    const entry = entries[0];
+
+    if (!entry) return;
+
+    const { height } = entry.contentRect;
+    calculateWrapperHeight(entry.target as HTMLElement, height);
+
+    stepWrapper.style.height = `${height}px`;
+  });
+
   const stepWrapper = (element.querySelector("[data-steppp-wrapper]") ||
     element) as HTMLElement;
   const mergedOptions: Options = { ...defaultOptions, ...options };
   const { stepIsValid } = mergedOptions;
   const steps = Array.from(stepWrapper.children) as HTMLElement[];
   const animationFrames: FrameDef = computeAnimationFrames(options.frames);
+  
   let currentAnimations: CommittableAnimation[] = [];
 
   getStep().style.position = "absolute";
   const currentStepHeight = getHeight(getStep());
   stepWrapper.style.height = `${currentStepHeight}px`;
   let currentWrapperHeight = currentStepHeight;
+
+  heightObserver.observe(getStep());
 
   element.querySelectorAll("[data-steppp-backward]").forEach((el) => {
     el.addEventListener("click", backward);

@@ -3,7 +3,7 @@ import { BuildAnimationArgs, CommittableAnimation, Direction } from "./types";
 const defaults: KeyframeAnimationOptions = {
   easing: "ease",
   duration: 500,
-  fill: "forwards",
+  fill: "backwards"
 };
 
 export const buildAnimation = ({
