@@ -80,7 +80,7 @@ it("Custom animations are used.", (done) => {
   });
 });
 
-it.only("Updates wrapper when active step height changes.", () => {
+it("Sets up resize listeners for the active step.", () => {
   const observeMock = jest.fn();
   const unobserveMock = jest.fn();
 
@@ -91,21 +91,12 @@ it.only("Updates wrapper when active step height changes.", () => {
     }
   }
 
-  const buildAnimationSpy = jest
-    .spyOn(utils, "buildAnimation")
-    .mockImplementation(() => {
-      return {
-        finished: Promise.resolve(true),
-        commitStyles() {},
-        persist() {},
-      };
-    });
-
   Steppp(getEl());
 
   const activeStep = document.querySelector('[data-steppp-active]');  
 
   expect(observeMock).toHaveBeenCalledTimes(1);
+  expect(observeMock).toHaveBeenCalledWith(activeStep);
   expect(unobserveMock).toHaveBeenCalledTimes(0);
 });
 
