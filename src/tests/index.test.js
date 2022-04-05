@@ -93,10 +93,8 @@ it("Sets up resize listeners for the active step.", () => {
 
   Steppp(getEl());
 
-  const activeStep = document.querySelector('[data-steppp-active]');  
-
   expect(observeMock).toHaveBeenCalledTimes(1);
-  expect(observeMock).toHaveBeenCalledWith(activeStep);
+  expect(observeMock).toHaveBeenCalledWith(getEl('[data-steppp-active]'));
   expect(unobserveMock).toHaveBeenCalledTimes(0);
 });
 

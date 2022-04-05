@@ -1,7 +1,2 @@
-export const getEl = () => {
-  return document.getElementById("steppp");
-};
-
-export const getBody = () => {
-  return document.body;
-};
+export const getEl = (selector = "#steppp") => document.querySelector(selector);
+export const getBody = () => document.body;
