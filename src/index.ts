@@ -17,6 +17,15 @@ import {
 import defaultOptions from "./defaultOptions";
 
 function Steppp(element: HTMLElement, options: any = defaultOptions) {
+  options = { ...defaultOptions, ...options };
+
+  const stepWrapper = (
+    element.querySelector("[data-steppp-wrapper]") ||element
+  ) as HTMLElement;
+  const steps = Array.from(stepWrapper.children) as HTMLElement[];
+  const mergedOptions: Options = { ...defaultOptions, ...options };
+  const { stepIsValid } = mergedOptions;
+
   const getStep = (stepIndex: number = getActiveStepIndex()): HTMLElement => {
     return steps[stepIndex];
   };
@@ -172,8 +181,6 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
     return frames;
   };
 
-  options = { ...defaultOptions, ...options };
-
   const heightObserver = new ResizeObserver((entries) => {
     const entry = entries[0];
 
@@ -185,11 +192,6 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
     stepWrapper.style.height = `${height}px`;
   });
 
-  const stepWrapper = (element.querySelector("[data-steppp-wrapper]") ||
-    element) as HTMLElement;
-  const mergedOptions: Options = { ...defaultOptions, ...options };
-  const { stepIsValid } = mergedOptions;
-  const steps = Array.from(stepWrapper.children) as HTMLElement[];
   const animationFrames: FrameDef = computeAnimationFrames(options.frames);
   
   let currentAnimations: CommittableAnimation[] = [];
