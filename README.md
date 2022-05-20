@@ -125,6 +125,46 @@ element.addEventListener('steppp:complete', (event) => {
 });
 ```
 
+### Custom Animation Settings
+
+By default 
+
+```js
+Steppp(element, {
+  frames: [
+    {
+      transform: 'translateX(-100%)'
+    },
+    {
+      transform: 'translateX(0)'
+    }
+  ]
+});
+```
+
+```js
+  Steppp(element, {
+    frames: {
+      enter: [
+        {
+          transform: "translateX(-100%)",
+        },
+        {
+          transform: "translateX(0)",
+        },
+      ],
+      exit: [
+        {
+          opacity: 1
+        },
+        {
+          opacity: 0
+        },
+      ],
+    }
+  });
+```
+
 #### Available Events
 
 These are the events you can hook into:
@@ -136,8 +176,3 @@ These are the events you can hook into:
 | steppp:start    | This event fires when a step transition starts. |
 | steppp:complete | This event fires when a step transition completes. |
 
-## Development
-
-### To Do:
-
-* custom animation options

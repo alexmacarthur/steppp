@@ -230,24 +230,6 @@ const element = document.getElementById("steppp");
 
 if (element) {
   Steppp(element, {
-    frames: {
-      enter: [
-        {
-          transform: "translateX(-100%)",
-        },
-        {
-          transform: "translateX(0)",
-        },
-      ],
-      exit: [
-        {
-          transform: "translateX(0)",
-        },
-        {
-          transform: "translateX(100%)",
-        },
-      ],
-    },
     // frames: [
     //   {
     //     transform: 'translateX(-100%)'
