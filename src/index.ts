@@ -226,29 +226,4 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
 
 Steppp.stepIsValid = (_slide: HTMLElement): boolean => true;
 
-const element = document.getElementById("steppp");
-
-if (element) {
-  Steppp(element, {
-    // frames: [
-    //   {
-    //     transform: 'translateX(-100%)'
-    //   },
-    //   {
-    //     transform: 'translateX(0)'
-    //   }
-    // ]
-  });
-
-  // animation frames can either be array or object.
-
-  // document.getElementById('forward')?.addEventListener('click', (_e) => {
-  //   forward();
-  // });
-
-  // document.getElementById('backward')?.addEventListener('click', (_e) => {
-  //   backward();
-  // });
-}
-
 export default Steppp;
