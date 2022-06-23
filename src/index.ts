@@ -20,7 +20,7 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
   options = { ...defaultOptions, ...options };
 
   const stepWrapper = (
-    element.querySelector("[data-steppp-wrapper]") ||element
+    element.querySelector("[data-steppp-wrapper]") || element
   ) as HTMLElement;
   const steps = Array.from(stepWrapper.children) as HTMLElement[];
   const mergedOptions: Options = { ...defaultOptions, ...options };
@@ -186,14 +186,26 @@ function Steppp(element: HTMLElement, options: any = defaultOptions) {
 
     if (!entry) return;
 
-    const { height } = entry.contentRect;
-    calculateWrapperHeight(entry.target as HTMLElement, height);
+    const oldHeight = currentWrapperHeight;
+    const { height: newHeight } = entry.contentRect;
 
-    stepWrapper.style.height = `${height}px`;
+    calculateWrapperHeight(entry.target as HTMLElement, newHeight);
+
+    animate({
+      frames: [
+        {
+          height: `${oldHeight}px`,
+        },
+        {
+          height: `${newHeight}px`,
+        },
+      ],
+      targetElement: stepWrapper,
+    });
   });
 
   const animationFrames: FrameDef = computeAnimationFrames(options.frames);
-  
+
   let currentAnimations: CommittableAnimation[] = [];
 
   getStep().style.position = "absolute";
